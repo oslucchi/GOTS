@@ -1,0 +1,36 @@
+/* Global includes */
+#include	<stdio.h>        
+#include	<string.h>
+#include	<stdlib.h>        
+#include	<errno.h>
+#include	<unistd.h>
+
+/* Local module includes */
+
+/* Costants */
+
+/* Macroes */               
+
+/* Local struct & new type definition */
+
+/* External Functions */
+
+/* External Variables */
+
+/* Global Variables */
+
+/* Local Variables */
+
+
+
+/*
+ *
+ *	Function:		
+ *
+ *	Description:	
+ *
+ *	Parameters:		
+ *
+ *	Returns:		
+ *
+ */

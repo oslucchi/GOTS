@@ -1,0 +1,5 @@
+PAPER = CONT
+DEVICE = STP10
+LP_DEVICE = STP10
+DESCRIPTION = stampante STP10
+MASTER = lambrusco.l-soft.it

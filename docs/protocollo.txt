@@ -1,0 +1,142 @@
+Il flusso di messaggi è organizzato secondo uno schema che 
+prevede nei primi 2 caratteri il codice di messaggio.
+
+Le attività iniziano con una connessione socket alla porta
+rptmng (normalmente impostata a 9001/tcp) e l'invio di un
+messaggio da client a server strutturato nel seguente modo:
+
+
+In seguitoa alla ricezione del messaggio di logon, il server
+dà l'avvio alla fase di riallineamento che è racchiusa tra due
+messaggi di inizio sequenza (messaggio 91) e fine sequenza
+(messaggio 92).
+I messaggi 91 e 92 non hanno body sono cioè messaggi di 
+lunghezza 2.
+
+Nell'ambito di questo header e footer sono inviati messaggi
+il tracciato è a lunghezza fissa.
+In particolare quelli inviati da Server a Client durante
+il riallineamento sono i seguenti:
+1) Stampanti configurate nel sistema
+codice 			94		2 caratteri
+nome stampante		alfabetico	8 caratteri
+nome report in stampa	alfabetico	8 caratteri
+job number in stampa	alfabetico	8 caratteri
+job son in stampa	alfabetico	8 caratteri
+carta corrente		alfabetico	8 caratteri
+descrizione printer	alfabetico	64 caratteri
+
+2) Carte configurate nel sistema
+codice 			95		2 caratteri
+nome carta		alfabetico	8 caratteri
+
+3) Report presenti nel sistema
+Nota bene. Il client riceve solo i report appartenenti
+all'utente inviato nel messaggio di logon. Se l'utente 
+specificato è SYSADM, vengono scaricati i report di tutti
+gli utenti.
+codice 			96		2 caratteri
+nome stampante		alfabetico	8 caratteri
+report path		alfabetico	64 caratteri
+report name		alfabetico	8 caratteri
+job number 		alfabetico	8 caratteri
+job son 		alfabetico	8 caratteri
+nome utente		alfabetico	16 caratteri
+carta richiesta		alfabetico	8 caratteri
+device per la stampa	alfabetico	7 caratteri
+id associato 		alfabetico	32 caratteri
+priorità (no gestito)	alfabetico	1 caratteri
+sheet option		numerico	3 caratteri
+skip option		numerico	3 caratteri
+disposition option	numerico	3 caratteri
+numero copie		numerico	3 caratteri
+data creazione		data		19 caratteri (formato gg/mm/aaaa HH:MM:SS)
+numero di linee		numerico	6 caratteri
+nome del job		alfabetico	8 caratteri
+
+
+L'intero sistema client server è configurato come sistema
+"message-driven". Il comportamento del server è cioè pilotato
+dai messaggi che l'applicazione invia.
+E' importante sottolineare che nessun messaggio viene 
+inviato da Server a Client se non sollecitato da quest'ultimo.
+
+I messaggi scambiati tra client e server devono essere organizzati
+secondo la seguente struttura:
+5 byte di header contenenti la lunghezza complessiva del
+	messaggio spedito (compreso l'header)
+messaggio applicativo della lunghezza indicata (- 5 byte
+	dell'header)
+
+Il messaggio applicativo è a sua volta strutturato con un
+codice (2 caratteri) ed il resto del messaggio come in seguito
+dettagliato.
+
+#define STARTMUL        0x0A
+#define STOPMUL         0x0B
+
+-) Monta Carta.
+codice 			01
+nome stampante		alfabetico	8 caratteri
+nome carta		alfabetico	8 caratteri
+Questa funzione imposta la carta indicata alla stampante
+passata per parametro.
+Se la stampante non viene trovata il server risponde
+esclusivamente con il messaggio 90KO.
+In caso di esecuzione effettuata il server risponde con il 
+messaggio 
+90OK
+e con una sequenza di riallineamento identica a quella
+iniziale (91, stampanti, carte, report, 92)
+
+
+-) Cambia Stato (Hold/Keep/Delete)
+codice 			02
+report id		alfabetico	32 caratteri
+nome stampante		alfabetico	8 caratteri
+stato del report	numerico	3 caratteri
+E' il comando necessario a cambiare lo stato di un report.
+Se il report viene trovato il server ritorna il messaggio
+90OK
+e segue con una sequenza di riallineamento identica a quella
+iniziale.
+In caso contrario il messaggio inviato è 90KO
+
+-) Cancella report
+codice 			03
+report id		alfabetico	32 caratteri
+nome stampante		alfabetico	8 caratteri
+E' il comando necessario a cancellare un report dalla coda.
+Se il report viene trovato il server ritorna il messaggio
+90OK
+e segue con una sequenza di riallineamento identica a quella
+iniziale.
+In caso contrario il messaggio inviato è 90KO
+
+
+-) Cambia stampante
+codice 			04
+report id		alfabetico	32 caratteri
+nome stampante attuale	alfabetico	8 caratteri
+nome nuova stampante	alfabetico	8 caratteri
+Questo comando sposta il report indicato dalla coda della
+stampante attuale ad una nuova.
+Se il comando può essere eseguito il server ritorna il 
+messaggio 90OK
+e segue con una sequenza di riallineamento identica a quella
+iniziale.
+In caso contrario il messaggio inviato è 90KO
+
+
+-) Visualizza report
+codice 			05
+Attualmente non implementato, risponde con un 90OK.
+Può essere utilizzato per test di protocollo.
+
+
+-) Refresh coda report
+codice 			06
+Non ha corpo.
+L'invio di questo messaggio obbliga il server ad effettuare
+una nuova sequenza di riallineamento identica a quella
+iniziale

@@ -1,0 +1,5 @@
+PAPER = CAZZ
+DEVICE = STP04
+LP_DEVICE = STP04
+DESCRIPTION = 'stampante STP04'
+MASTER = sassella.l-soft.it

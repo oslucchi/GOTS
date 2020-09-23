@@ -1,0 +1,77 @@
+#
+# LIB = library name
+# SRC = list of source files the library is made of.
+# LOCAL_CFLAGS = list of private Compiler flags
+# WARNING : if library is a local one, comment the line after install:
+# ( Do not install in project lib dir )
+#
+
+.SUFFIXES: .uil .uid .do .C .ec
+
+OBJ = $(SRC:.c=.o) $(CPPSRC:.C=.o) $(ECSRC:.ec=.o)
+
+DOBJ = $(SRC:.c=.do) $(CPPSRC:.C=.do) $(ECSRC:.ec=.do)
+
+CFLAGS = -I${PROJECT_HOME}/include $(LOCAL_CFLAGS)
+
+ARFLAGS = rv
+
+$(LIB):		$(OBJ)
+			rm -f $(LIB)
+			$(AR) $(ARFLAGS) $(LIB) $(OBJ)
+
+$(LIBD):	$(DOBJ)
+			rm -f $(LIBD)
+			$(AR) $(ARFLAGS) $(LIBD) $(DOBJ)
+
+install run_install installd run_installd:	$(LIB)
+			cp $(LIB) ${PROJECT_HOME}/lib
+
+depend:
+			makedepend $(CFLAGS) -I/usr/include -I/usr/include/sys $(SRC)
+
+compile:	$(LIB)
+			cp $(LIB) ${PROJECT_HOME}/lib
+
+debug:		$(LIBD)
+			cp $(LIBD) ${PROJECT_HOME}/lib
+
+clean:
+			rm -f $(LIB) $(OBJ) $(LIBD) $(DOBJ) $(ECSRC:.ec=.c)
+
+tag:
+			ctags $(SRC) $(CPPSRC) $(ECSRC)
+			
+all: 		$(LIB) 
+			make tag
+			make install
+
+.C.o:
+			$(CC) $(CFLAGS) -c -o $@ $<
+	
+.C.do:
+			$(CC) $(CFLAGS) -DDEBUG -c -o $@ $<
+	
+.c.do:
+			-mv $*.o $*.oo
+			$(CC) $(CFLAGS) -DDEBUG -c $*.c
+			mv $*.o $@
+			-mv $*.oo $*.o
+
+.ec.o:
+			@rm -f $*.o
+			@rm -f $*.c
+			esql $(CFLAGS) -I$(INFORMIXDIR)/incl/esql -e $<
+			-$(CC) $(CFLAGS) -I$(INFORMIXDIR)/incl/esql -c $*.c
+			@rm -f $*.c
+
+.ec.do:
+			-mv $*.o $*.oo
+			@rm -f $*.c
+			esql $(CFLAGS) -I$(INFORMIXDIR)/incl/esql -e $<
+			-$(CC) $(CFLAGS) -I$(INFORMIXDIR)/incl/esql -DDEBUG -c $*.c
+			mv $*.o $@
+			-mv $*.oo $*.o
+			@rm -f $*.c
+	
+# DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -1,0 +1,5 @@
+PAPER = CONT
+DEVICE = STP14
+LP_DEVICE = STP14
+DESCRIPTION = stampante STP14
+MASTER = lambrusco.l-soft.it

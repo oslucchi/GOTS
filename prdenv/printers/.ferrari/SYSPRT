@@ -1,0 +1,5 @@
+PAPER = CONT
+DEVICE = SYSPRT
+LP_DEVICE = SYSPRT
+DESCRIPTION = stampante SYSPRT
+MASTER = sassella.l-soft.it

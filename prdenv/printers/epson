@@ -1,0 +1,5 @@
+PAPER = CONT
+DEVICE = STP16
+LP_DEVICE = STP16
+DESCRIPTION = stampante STP16
+MASTER = sassella.l-soft.it

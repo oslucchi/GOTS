@@ -1,0 +1,87 @@
+#
+# Basic makefile for PX25.
+# All makefiles shall include this standard one
+# DIP_LIBS = list of library pathnames used by the application
+#
+
+.SUFFIXES: .uil .uid .do .x .C .ec 
+
+OBJ =  $(SRC:.c=.o) $(CPPSRC:.C=.o) $(ECSRC:.ec=.o) 
+
+DOBJ = $(SRC:.c=.do) $(CPPSRC:.C=.do) $(ECSRC:.ec=.do)
+
+CFLAGS = -I$(PROJECT_HOME)/include -I$(PROJECT_HOME)/include/mysql $(LOCAL_CFLAGS)
+
+LIBES = -L$(PROJECT_HOME)/lib $(LOCAL_LIBES)
+LIBESD = -L$(PROJECT_HOME)/lib $(LOCAL_LIBESD)
+
+$(EXE):		$(OBJ) $(DIP_LIBS)
+			$(LD) -o $@ $(OBJ) $(LIBES)
+
+$(EXE).d:	$(DOBJ) $(DIP_LIBS)
+			$(LD) -o $@ $(DOBJ) $(LIBESD)
+
+compile:	$(EXE)
+
+debug:		$(EXE).d
+
+installd:
+			cp $(EXE).d /usr/prj/bin
+
+install:
+			cp $(EXE) /usr/prj/bin
+
+run_install:
+			mv /usr/prj/bin/$(EXE) ./.oldexe
+			make install
+
+run_installd:
+			mv /usr/prj/bin/$(EXE).d ./.oldexe.d
+			make installd
+
+depend:
+			makedepend $(CFLAGS) -I . -I/usr/include \
+				 -I/usr/include/sys $(SRC) $(ECSRC)
+			makedepend -o.do -s"# DEBUG Objects Dependencies" \
+				$(CFLAGS) -I . -I/usr/include -I/usr/include/sys $(SRC) $(ECSRC)
+
+clean:
+			rm -f $(EXE) $(EXE).d $(OBJ) $(DOBJ) $(ECSRC:.ec=.c) tags $(LOCAL_RM)
+
+tag:
+			ctags -h $(SRC) $(CPPSRC) $(ECSRC)
+			
+all: 		$(EXE) 
+			make tag
+			make install
+
+.x.h:
+			rpcgen $*.x
+
+
+.C.o:
+			$(CC) $(CFLAGS) -c -o $@ $<
+	
+.C.do:
+			$(CC) $(CFLAGS) -DDEBUG -c -o $@ $<
+	
+.c.do:
+			$(CC) $(CFLAGS) -DDEBUG -c -o $@ $<
+	
+.ec.o:
+			@rm -f $*.o
+			@rm -f $*.c
+			esql $(CFLAGS) -I$(INFORMIXDIR)/incl/esql -e $<
+			-$(CC) $(CFLAGS) -I$(INFORMIXDIR)/incl/esql -c $*.c
+			@rm -f $*.c
+
+.ec.do:
+			-mv $*.o $*.oo
+			@rm -f $*.c
+			esql $(CFLAGS) -I$(INFORMIXDIR)/incl/esql -e $<
+			-$(CC) $(CFLAGS) -I$(INFORMIXDIR)/incl/esql -DDEBUG -c $*.c
+			-mv $*.o $@
+			-mv $*.oo $*.o
+			@rm -f $*.c
+	
+# DO NOT DELETE THIS LINE -- make depend depends on it.

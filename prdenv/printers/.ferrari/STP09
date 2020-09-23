@@ -1,0 +1,5 @@
+PAPER = CONT
+DEVICE = STP09
+LP_DEVICE = STP09
+DESCRIPTION = stampante STP09
+MASTER = sassella.l-soft.it

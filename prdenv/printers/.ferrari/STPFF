@@ -1,0 +1,5 @@
+PAPER = CONT
+DEVICE = STPFF
+LP_DEVICE = STPFF
+DESCRIPTION = stampante STPFF
+MASTER = sassella.l-soft.it

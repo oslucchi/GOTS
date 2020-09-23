@@ -1,0 +1,5 @@
+PAPER = CONT
+DEVICE = STP23
+LP_DEVICE = STP23
+DESCRIPTION = stampante STP23
+MASTER = sassella.l-soft.it

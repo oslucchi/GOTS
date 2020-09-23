@@ -1,0 +1,5 @@
+PAPER = STND
+DEVICE = STP16
+LP_DEVICE = STP16
+DESCRIPTION = 'stampante locale'
+MASTER = inferno.l-soft.it
