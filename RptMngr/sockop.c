@@ -90,7 +90,8 @@ int		RecvSock(char *pcBuf, int iBufSize)
 		switch(iRcvdBytes)
 		{
 		case -1:
-			return(errno);
+			if (errno != EINTR)
+				return(errno);
 			break;
 
 		case 0:

@@ -202,7 +202,7 @@ int		main(int argc, char **argv)
 
 	strcpy(gacGCUXHome, gacHomeDir);
 
-	sprintf(acBufDebugFile, "%s/lock/gcspool", gacGCUXHome);
+	sprintf(acBufDebugFile, "%s/lock/gotspool", gacGCUXHome);
 	if ((pFLock = fopen(acBufDebugFile, "r+")) != NULL)
 	{
 		fscanf(pFLock, "%d", &iPid);

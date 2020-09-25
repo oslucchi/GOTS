@@ -361,7 +361,7 @@ int		main(int argc, char **argv)
 
 	strcpy(gacGCUXHome, gacHomeDir);
 
-	sprintf(acBufDebugFile, "%s/lock/gcrptmng", gacGCUXHome);
+	sprintf(acBufDebugFile, "%s/lock/gotrptmng", gacGCUXHome);
 
 	if ((pFPid = fopen(acBufDebugFile, "w")) != NULL)
 	{
